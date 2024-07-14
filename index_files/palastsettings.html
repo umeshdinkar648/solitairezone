@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+
+	<title>Spiele-Palast Settings</title>
+	<meta name="description" content="Spiele-Palast Settings">
+	<meta name="author" content="Spiele-Palast GmbH">
+</head>
+
+<body>
+	<script>
+		window.addEventListener("storage", function(e) {
+			var data = {method:'update', key: e.key, value:e.newValue};
+			window.parent.postMessage(JSON.stringify(data), "*");
+		});
+		
+		window.onmessage = function(e) 
+		{
+			var trusted = [
+				"https://backend.skat-palast.de",
+				"https://www.skat-palast.de",
+				"https://backend.doppelkopf-palast.de",
+				"https://www.doppelkopf-palast.de",
+				"https://backend.schafkopf-palast.de",
+				"https://www.schafkopf-palast.de",
+				"https://backend.mau-mau-palast.de",
+				"https://www.mau-mau-palast.de",
+				"https://backend.romme-palast.de",
+				"https://www.romme-palast.de",
+				"https://www.rummy-palace.com",
+				"https://backend.solitaire-palast.de", 
+				"https://www.solitaire-palast.de",
+				"https://www.solitaire-palace.com",
+				"https://backend.canasta-palast.de", 
+				"https://www.canasta-palast.de", 
+				"https://www.canasta-palace.com", 
+				"https://backend.binokel-palast.de", 
+				"https://www.binokel-palast.de",
+				"https://www.pinochle-palace.com",
+				"https://backend.spider-palast.de",
+				"https://www.spider-palast.de",
+				"https://backend.whist-palast.de",
+				"https://www.whist-palace.com",
+				"https://www.whist-palast.de",
+				"https://backend.ginrummy-palace.com",
+				"https://www.ginrummy-palace.com",
+				"https://www.ginromme-palast.de",
+				"https://backend.spiele-palast.de",
+				"https://www.spiele-palast.de",
+				"http://mirror.spiele-palast.de",
+				"https://mirror.spiele-palast.de",
+				"http://mirror2.spiele-palast.de",
+				"https://mirror2.spiele-palast.de",
+				"https://mirrorbackend.spiele-palast.de",
+				"http://mirrorbackend.spiele-palast.de"
+            ];
+
+			
+			if (trusted.indexOf(e.origin) == -1)
+			{
+				console.log(e.origin + " is not trusted to access palastsettings");
+				return;
+			}
+			
+			var payload = JSON.parse(e.data);
+			switch(payload.method) {
+				case 'set':
+					try {
+						localStorage.setItem(payload.key, payload.value);
+					}
+					catch (err)
+					{
+					}
+					break;
+					
+				case 'get':
+					var value = null;
+					try {
+						value = localStorage.getItem(payload.key);
+					} catch(err)
+					{
+					}
+					var data = {method:'get', key:payload.key, value: value};
+					window.parent.postMessage(JSON.stringify(data), "*");
+					break;
+					
+				case 'getall':
+					var entries = {};
+					try {
+						for (var i = 0; i < localStorage.length; i++){
+							entries[localStorage.key(i)] = localStorage.getItem(localStorage.key(i));
+						}
+					}
+					catch (err)
+					{
+					}
+					var data = {method:'getall', data: entries};
+					window.parent.postMessage(JSON.stringify(data), "*");
+					break;
+					
+				case 'remove':
+					localStorage.removeItem(payload.key);
+					break;
+					
+				case 'clear':
+					localStorage.clear();
+					break;
+				
+				case 'keys':
+					var keys = [];
+					for (var key in localStorage){
+						keys.push(key);
+					}
+					
+					var data = {method:'keys', keys: keys};
+					window.parent.postMessage(JSON.stringify(data), "*");
+					break;
+					
+			}
+		};
+	
+	</script>
+
+</body></html>

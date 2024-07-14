@@ -1,0 +1,14 @@
+var listenersByMethod=[];var listenersByKey=[];var palastSettings=document.createElement("iframe");palastSettings.id="palastsettings";palastSettings.src="https://www.spiele-palast.de/lib/palastsettings.html";palastSettings.style.display='none';document.body.appendChild(palastSettings);PalastSettingsApi={messageListener:function(e){var local=e.origin==window.location.origin;if(e.origin!="https://www.spiele-palast.de"&&!local)return;let data='';try{data=JSON.parse(e.data)}catch(e){return!1}
+switch(data.method){case "get":PalastSettingsApi.eventGet(data,!1);break;case "getall":PalastSettingsApi.eventGetAll(data,!1);break;case "keys":PalastSettingsApi.eventKeys(data);break;case "update":PalastSettingsApi.eventUpdate(data);break;default:break}},addMethodListener:function(method,listener){var methodListeners=listenersByMethod[method]||[];if(methodListeners.indexOf(listener)===-1)
+methodListeners.push(listener);listenersByMethod[method]=methodListeners},addKeyListener:function(key,listener){var keyListeners=listenersByKey[key]||[];if(keyListeners.indexOf(listener)===-1)
+keyListeners.push(listener);listenersByKey[key]=keyListeners},setValue:function(key,value){try{localStorage.setItem(key,value)}catch(err){}
+palastSettings.contentWindow.postMessage(JSON.stringify({key:key,value:value,method:"set"}),"*")},getValue:function(key,local){if(local){var value=null;try{value=localStorage.getItem(key)}catch(err){}
+var data={method:'get',key:key,value:value};PalastSettingsApi.eventGet(data,!0)}else palastSettings.contentWindow.postMessage(JSON.stringify({key:key,method:"get"}),"*")},getAll:function(local){if(local){var entries={};try{for(var i=0;i<localStorage.length;i++){entries[localStorage.key(i)]=localStorage.getItem(localStorage.key(i))}}catch(err){}
+var data={method:'getall',data:entries};PalastSettingsApi.eventGetAll(data,!0)}else palastSettings.contentWindow.postMessage(JSON.stringify({method:"getall"}),"*")},clear:function(){localStorage.clear();palastSettings.contentWindow.postMessage(JSON.stringify({method:"clear"}),"*")},eventGet:function(data,local){if((data.value===null||data.value===undefined)&&!local)
+PalastSettingsApi.getValue(data.key,!0);else{var listeners=listenersByKey[data.key]||[];for(var i=0;i<listeners.length;i++)
+listeners[i](data);}},eventGetAll:function(data,local){if(!data.data&&!local)
+PalastSettingsApi.getAll(!0);else{var listeners=listenersByMethod.getall||[];for(var i=0;i<listeners.length;i++)
+listeners[i](data);}},eventKeys:function(data){var listeners=listenersByMethod.keys||[];for(var i=0;i<listeners.length;i++)
+listeners[i](data);},eventUpdate:function(data){var listeners=listenersByKey[data.key]||[];for(var i=0;i<listeners.length;i++)
+listeners[i](data);}}
+window.addEventListener("message",PalastSettingsApi.messageListener)
