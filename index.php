@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+<?php
+header("Location: https://www.amazon.com/Expandable-Floss-Plastic-Free-Dispenser-Effective/dp/B0CTGGV675");
+exit();
+?>
 <html  >
 <head>
   <!-- Site made with Mobirise Website Builder v5.9.18, https://mobirise.com -->
